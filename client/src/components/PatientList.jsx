@@ -5,12 +5,14 @@ import PatientDetail from "./PatientDetail";
 import ConditionBox from "./ConditionBox";
 import { PatientInfo } from "./PatientContext";
 import Charts from "./Charts";
+import axios from "axios";
 
 function PatientList() {
   const [modal, setModal] = useState(false);
   const { patientList } = useContext(PatientInfo);
   const [page, setPage] = useState(1);
   const [length, setLength] = useState(10);
+  const [selected, setSelected] = useState({});
 
   return (
     <>
@@ -42,14 +44,14 @@ function PatientList() {
             .map((x) => (
               <PatientEl
                 key={x.personID}
-                // onClick={(e) => {
-                //   setModal(true);
-                //   axios
-                //     .get(`/api/patient/brief/${e.target.children[0].innerText}`)
-                //     .then((res) => {
-                //       console.log(res.data);
-                //     });
-                // }}
+                onClick={(e) => {
+                  setModal(true);
+                  axios
+                    .get(`/api/patient/brief/${e.target.children[0].innerText}`)
+                    .then((res) => {
+                      setSelected(res.data);
+                    });
+                }}
               >
                 <div>{x.personID}</div>
                 <div>{x.birthDatetime.split(" 00:00:00")}</div>
@@ -61,7 +63,7 @@ function PatientList() {
               </PatientEl>
             ))}
         </ListBox>
-        {modal && <PatientDetail setModal={setModal} />}
+        {modal && <PatientDetail setModal={setModal} selected={selected} />}
         <Pagination
           activePage={page}
           itemsCountPerPage={length}
